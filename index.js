@@ -17,3 +17,11 @@ let inputPassword = document.querySelector("#exampleInputPassword1");
 let inputFile = document.querySelector("#exampleInputFile");
 let admin = document.querySelector("#inputAdmin");
 let buttonSaveForms = document.querySelector(".btn");
+
+
+let fields = document.querySelectorAll("#form-user-create [name]");
+fields.forEach(function(field, index){
+
+    
+
+});
