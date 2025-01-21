@@ -1,0 +1,10 @@
+let inputName = document.querySelector("#exampleInputName");
+let inputGenderM= document.querySelector("#exampleInputGenderM");
+let inputGenderF = document.querySelector("#exampleInputGenderF");
+let inputBirth = document.querySelector("#exampleInputBirth");
+let inputCountry = document.querySelector("#exampleInputCountry");
+let inputEmail = document.querySelector("#exampleInputEmail1");
+let inputPassword = document.querySelector("#exampleInputPassword1");
+let inputFile = document.querySelector("#exampleInputFile");
+let admin = document.querySelector("#")
+let buttonSaveForms = document.querySelector(".btn");
