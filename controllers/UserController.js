@@ -30,7 +30,9 @@ class UserController {
     // Ao percorrer estou retornando neste metodo os valores que estão dentro dos campos do formulário.
     getValue() {
 
-        this.formEl.elements.forEach(function (field, index) {
+        const user = {};
+
+        [...this.formEl.elements].forEach(function (field, index) {
             if (field.name == "gender") {
                 if (field.checked === true) { // ou apenas field.checked
                     user[field.name] = field.name;
