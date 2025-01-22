@@ -1,5 +1,6 @@
 class User {
 
+    // Aqui estou definindo o que cada usuário vai ter
     constructor(name, gender, birth, country, email, password, photo, admin){
         this.name = name;
         this.gerder = gender;
