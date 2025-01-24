@@ -26,10 +26,17 @@ class UserController {
             // função que é o content que é a minha imagem
             // value.photo recebe o content e depois executo o addLine para incluir no HTML
 
-            this.getPhoto((content) => {
+            // agora quando eu chamo o metodo getPhoto, eu uso o then para que depois que a promessa for
+            // resolvida ele executa a função que recebe o content
+
+            this.getPhoto().then(
+            (content)=>{
                 value.photo = content;
                 this.addLine(value);
-            })
+            },
+            (e)=>{
+               console.error(e)
+            });
 
         })
     }
@@ -42,22 +49,34 @@ class UserController {
     // e me retorna se ele foi concluído 
     // depois o fileReard.readAsDataURL ele lê o meu file e quando ele finaliza a leitura passa o callback
 
-    getPhoto(callback) {
-        let fileReard = new FileReader();
 
-        let elements = [...this.formEl.elements].filter(item => {
-            if (item.name === "photo") {
-                return item;
+    // agora em vez que passar o callback como função eu estou retornando uma Promise, com os parametros
+    // resolve e reject, quando o fileReard.onload der certo ele vai me mandar o resolve, e caso ele de errado
+    // eu passo o onerror com o reject e o erro que ele der pelo atributo (e)
+
+    getPhoto() {
+
+        return new Promise((resolve, reject)=>{
+            let fileReard = new FileReader();
+
+            let elements = [...this.formEl.elements].filter(item => {
+                if (item.name === "photo") {
+                    return item;
+                }
+            });
+    
+            let file = elements[0].files[0];
+    
+            fileReard.onload = () => {
+                resolve(fileReard.result);
             }
-        });
 
-        let file = elements[0].files[0];
-
-        fileReard.onload = () => {
-            callback(fileReard.result);
-        }
-
-        fileReard.readAsDataURL(file)
+            fileReard.onerror = (e)=>{
+                reject(e)
+            }
+    
+            fileReard.readAsDataURL(file)
+        })
     }
 
 
