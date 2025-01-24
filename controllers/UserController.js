@@ -34,15 +34,15 @@ class UserController {
             // resolvida ele executa a função que recebe o contentno
 
             this.getPhoto().then(
-            (content)=>{
-                value.photo = content;
-                this.addLine(value);
-                this.formEl.reset()
-                btn.disabled = false;
-            },
-            (e)=>{
-               console.error(e)
-            });
+                (content) => {
+                    value.photo = content;
+                    this.addLine(value);
+                    this.formEl.reset()
+                    btn.disabled = false;
+                },
+                (e) => {
+                    console.error(e)
+                });
 
         })
     }
@@ -62,22 +62,22 @@ class UserController {
 
     getPhoto() {
 
-        return new Promise((resolve, reject)=>{
+        return new Promise((resolve, reject) => {
             let fileReard = new FileReader();
 
             let elements = [...this.formEl.elements].filter(item => {
-                if (item.name === "photo") {
+                if (item.name == "photo") {
                     return item;
                 }
             });
-    
+
             let file = elements[0].files[0];
-    
+
             fileReard.onload = () => {
                 resolve(fileReard.result);
             }
 
-            fileReard.onerror = (e)=>{
+            fileReard.onerror = (e) => {
                 reject(e)
             }
 
@@ -85,10 +85,10 @@ class UserController {
             // receber algum parametro ele não criava o html, agora com o if()
             // eu digo que se o cliente mandar a foto ele exiba a que o usuário mandou
             //  se não mandar nada eu resolve minha promise enviando uma foto padrão de usuário
-    
-            if(file){
+
+            if (file) {
                 fileReard.readAsDataURL(file)
-            } else{
+            } else {
                 resolve('dist/profile-user.png')
             }
 
@@ -101,14 +101,22 @@ class UserController {
     getValue() {
 
         const user = {};
+        let isValid = true;
+
 
         [...this.formEl.elements].forEach(function (field, index) {
+
+            if (['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value) {
+                field.parentElement.classList.add('has-error');
+                isValid = false;
+            }
+
             if (field.name == "gender") {
                 if (field.checked === true) { // ou apenas field.checked
                     user[field.name] = field.name;
                 }
 
-            } else if(field.name == "admin"){
+            } else if (field.name == "admin") {
                 user[field.name] = field.checked;
             } else {
 
@@ -117,16 +125,22 @@ class UserController {
             }
         });
 
-        return new User(
-            user.name,
-            user.gender,
-            user.birth,
-            user.country,
-            user.email,
-            user.password,
-            user.photo,
-            user.admin
-        );
+        if(!isValid){
+            return false;
+        } else {
+            return new User(
+                user.name,
+                user.gender,
+                user.birth,
+                user.country,
+                user.email,
+                user.password,
+                user.photo,
+                user.admin
+            );
+        }
+
+        
 
     }
 
