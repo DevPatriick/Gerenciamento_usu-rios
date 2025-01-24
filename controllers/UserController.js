@@ -22,6 +22,10 @@ class UserController {
             event.preventDefault();
             let value = this.getValue();
 
+            let btn = this.formEl.querySelector("[type=submit");
+
+            btn.disabled = true;
+
             // aqui eu executo a função getPhoto chamando a função de callback, passo parametro da minha
             // função que é o content que é a minha imagem
             // value.photo recebe o content e depois executo o addLine para incluir no HTML
@@ -33,6 +37,8 @@ class UserController {
             (content)=>{
                 value.photo = content;
                 this.addLine(value);
+                this.formEl.reset()
+                btn.disabled = false;
             },
             (e)=>{
                console.error(e)
@@ -136,7 +142,7 @@ class UserController {
             <td>${dataUser.name}</td>
             <td>${dataUser.email}</td>
             <td>${dataUser.admin ? "Sim" : "Não"}</td>
-            <td>${dataUser.birth}</td>
+            <td>${dataUser.register}</td>
             <td>
                 <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
                 <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
