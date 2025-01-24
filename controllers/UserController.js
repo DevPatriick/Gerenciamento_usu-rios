@@ -8,8 +8,15 @@ class UserController {
         this.tableEl = document.getElementById(tableId);
 
         // chamando o metodo ao instanciar o UserController
-        this.submit()
+        this.submit();
+        this.onEditCancel()
 
+    }
+
+    onEditCancel(){
+        document.querySelector(".btn-defaut").addEventListener('click', (e)=>{
+            this.showPanelCreate();
+        })
     }
 
     // Aqui estou pegando o formEl que vai ser o id do formulário que veio como parametro e fazendo o
@@ -165,15 +172,35 @@ class UserController {
             <td>${dataUser.admin ? "Sim" : "Não"}</td>
             <td>${Utils.dateFormat(dataUser.register)}</td>
             <td>
-                <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
+                <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
                 <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
             </td>
         `;
+
+        tr.querySelector(".btn-edit").addEventListener('click', ()=>{
+            JSON.parse(tr.dataset.user);
+            this.showPanelUptade()
+
+        })
 
         this.tableEl.appendChild(tr);
 
         this.uptadeCount();
 
+    }
+
+    showPanelCreate(){
+        const boxpost = document.querySelector(".box-success")
+        boxpost.style = "display:block"
+        const boxput = document.querySelector(".box-primary")
+        boxput.style = "display:none"
+    }
+
+    showPanelUptade(){
+        const boxpost = document.querySelector(".box-success")
+        boxpost.style = "display:none"
+        const boxput = document.querySelector(".box-primary")
+        boxput.style = "display:block"
     }
 
     uptadeCount() {
