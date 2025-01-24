@@ -27,7 +27,7 @@ class UserController {
             // value.photo recebe o content e depois executo o addLine para incluir no HTML
 
             // agora quando eu chamo o metodo getPhoto, eu uso o then para que depois que a promessa for
-            // resolvida ele executa a função que recebe o content
+            // resolvida ele executa a função que recebe o contentno
 
             this.getPhoto().then(
             (content)=>{
@@ -74,8 +74,18 @@ class UserController {
             fileReard.onerror = (e)=>{
                 reject(e)
             }
+
+            // tratei alguns erros caso o usuários não envie a foto, antes como ele estava esperando
+            // receber algum parametro ele não criava o html, agora com o if()
+            // eu digo que se o cliente mandar a foto ele exiba a que o usuário mandou
+            //  se não mandar nada eu resolve minha promise enviando uma foto padrão de usuário
     
-            fileReard.readAsDataURL(file)
+            if(file){
+                fileReard.readAsDataURL(file)
+            } else{
+                resolve('dist/profile-user.png')
+            }
+
         })
     }
 
@@ -92,6 +102,8 @@ class UserController {
                     user[field.name] = field.name;
                 }
 
+            } else if(field.name == "admin"){
+                user[field.name] = field.checked;
             } else {
 
                 user[field.name] = field.value;
@@ -116,18 +128,22 @@ class UserController {
     // e crio o elemento com o template string
     addLine(dataUser, tableId) {
 
-        this.tableEl.innerHTML = `
-        <tr>
+        let tr = document.createElement('tr')
+
+        tr.innerHTML = `
+        
             <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
             <td>${dataUser.name}</td>
             <td>${dataUser.email}</td>
-            <td>${dataUser.admin}</td>
+            <td>${dataUser.admin ? "Sim" : "Não"}</td>
             <td>${dataUser.birth}</td>
             <td>
                 <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
                 <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
             </td>
-        </tr>`;
+        `;
+
+        this.tableEl.appendChild(tr)
 
     }
 
