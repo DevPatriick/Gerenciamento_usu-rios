@@ -16,23 +16,23 @@ class User {
     // incluindo o get para buscar a informação
 
     get name(){
-        return this._name
+        return this._name;
     }
 
     get gender(){
-        return this._gerder
+        return this._gerder;
     }
 
     get birth(){
-        return this._birth
+        return this._birth;
     }
 
     get country(){
-        return this._country
+        return this._country;
     }
 
     get email(){
-        return this._email
+        return this._email;
     }
 
     get password(){
@@ -40,7 +40,7 @@ class User {
     }
 
     get photo(){
-        return this._photo
+        return this._photo;
     }
 
     set photo(value){
@@ -48,11 +48,11 @@ class User {
     }
 
     get admin(){
-        return this._admin
+        return this._admin;
     }
 
     get register(){
-        return this._register
+        return this._register;
     }
 
     

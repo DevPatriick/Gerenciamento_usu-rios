@@ -33,6 +33,11 @@ class UserController {
             // agora quando eu chamo o metodo getPhoto, eu uso o then para que depois que a promessa for
             // resolvida ele executa a função que recebe o contentno
 
+            if (!value) {
+                btn.disabled = false;
+                return false;
+            }
+
             this.getPhoto().then(
                 (content) => {
                     value.photo = content;
@@ -66,7 +71,7 @@ class UserController {
             let fileReard = new FileReader();
 
             let elements = [...this.formEl.elements].filter(item => {
-                if (item.name == "photo") {
+                if (item.name === "photo") {
                     return item;
                 }
             });
@@ -125,7 +130,7 @@ class UserController {
             }
         });
 
-        if(!isValid){
+        if (!isValid) {
             return false;
         } else {
             return new User(
@@ -140,7 +145,7 @@ class UserController {
             );
         }
 
-        
+
 
     }
 
@@ -148,7 +153,9 @@ class UserController {
     // e crio o elemento com o template string
     addLine(dataUser, tableId) {
 
-        let tr = document.createElement('tr')
+        let tr = document.createElement('tr');
+
+        tr.dataset.user = JSON.stringify(dataUser);
 
         tr.innerHTML = `
         
@@ -163,8 +170,26 @@ class UserController {
             </td>
         `;
 
-        this.tableEl.appendChild(tr)
+        this.tableEl.appendChild(tr);
 
+        this.uptadeCount();
+
+    }
+
+    uptadeCount() {
+
+        let numberUser = 0;
+        let numberAdmin = 0;
+        [...this.tableEl.children].forEach(tr=> {
+            numberUser++;
+            let users = JSON.parse(tr.dataset.user);
+            if (users._admin) {
+                numberAdmin++
+            }
+        })
+
+        document.querySelector('#number-User').innerHTML = numberUser;
+        document.querySelector('#number-Admin').innerHTML = numberAdmin
     }
 
 }
