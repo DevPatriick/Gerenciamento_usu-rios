@@ -1,43 +1,48 @@
+// A classe UserController gerencia as interações com os formulários e a tabela de usuários.
 class UserController {
 
     // O construtor recebe os IDs dos formulários e da tabela e inicializa os atributos da classe.
     constructor(formId, formIdUptade, tableId) {
 
+        // Inicializa as variáveis que armazenam os formulários e a tabela.
         this.formEl = document.getElementById(formId);  // Armazena o formulário de criação.
         this.formElPut = document.getElementById(formIdUptade);  // Armazena o formulário de atualização.
         this.tableEl = document.getElementById(tableId);  // Armazena a tabela de usuários.
 
         // Chama os métodos logo após a instância da classe.
-        this.submit();
-        this.onEdit();
-        this.selectAll();
+        this.submit();  // Define o comportamento do envio do formulário de criação.
+        this.onEdit();  // Define o comportamento ao editar um usuário.
+        this.selectAll();  // Carrega todos os usuários e exibe na tabela.
 
     }
 
-    // Define o comportamento ao editar de um usuário.
+    // Define o comportamento ao editar um usuário.
     onEdit() {
-        // Adiciona um evento de click no botão de cancelar edição, que vai exibir o painel de criação.
+
+        // Evento de click no botão de cancelar edição, que exibe o painel de criação.
         document.querySelector(".btn-defaut").addEventListener('click', (e) => {
-            this.showPanelCreate();  // Exibe o painel de criação ao cancelar a edição.
+            this.showPanelCreate();  // Exibe o painel de criação.
         });
 
-        // Adiciona um evento de submit ao formulário de edição.
+        // Evento de submit no formulário de edição, que vai atualizar o usuário.
         this.formElPut.addEventListener("submit", event => {
-            event.preventDefault();  // Previne o comportamento padrão (recarregar a página).
+            event.preventDefault();  // Previne o comportamento padrão do formulário (não recarrega a página).
 
-            let btn = this.formElPut.querySelector("[type=submit]");  // Seleciona o botão de submit.
+            let btn = this.formElPut.querySelector("[type=submit]");  // Seleciona o botão de submit do formulário.
             btn.disabled = true;  // Desabilita o botão para evitar múltiplos cliques.
 
-            let value = this.getValue(this.formElPut);  // Obtém os valores do formulário de edição.
+            // Obtém os valores do formulário de edição.
+            let value = this.getValue(this.formElPut);  
             console.log(value);  // Exibe os valores no console para depuração.
 
             let index = this.formElPut.dataset.trIndex;  // Obtém o índice da linha da tabela a ser editada.
 
-            let tr = this.tableEl.rows[index];  // Seleciona a linha da tabela correspondente.
+            let tr = this.tableEl.rows[index];  // Seleciona a linha correspondente na tabela.
 
-            let userOld = JSON.parse(tr.dataset.user);  // Obtém os dados do usuário da linha.
+            let userOld = JSON.parse(tr.dataset.user);  // Obtém os dados antigos do usuário da linha.
 
-            let result = Object.assign({}, userOld, value);  // Combina os dados antigos com os novos.
+            // Cria um novo objeto combinando os dados antigos com os novos valores do formulário.
+            let result = Object.assign({}, userOld, value);
 
             this.uptadeCount();  // Atualiza as contagens de usuários e administradores.
 
@@ -48,33 +53,38 @@ class UserController {
                     if (!value.photo) {
                         result._photo = userOld._photo;
                     } else {
-                        result._photo = content;  // Se houver foto nova, usa a nova.
+                        result._photo = content;  // Usa a foto nova, se existir.
                     }
 
-                    user.save()
-                    // Atualiza os dados da linha na tabela.
+                    let user = new User();  // Cria uma instância de User.
+                    user.loadFromJSON(result);  // Carrega os dados atualizados do usuário.
+
+                    user.save();  // Salva os dados do usuário no armazenamento local.
+
+                    // Atualiza os dados na linha da tabela.
                     tr.dataset.user = JSON.stringify(result);
-                    tr.innerHTML = `  // Atualiza o conteúdo HTML da linha com os novos dados.
-        
-            <td><img src="${result._photo}" alt="User Image" class="img-circle img-sm"></td>
-            <td>${result._name}</td>
-            <td>${result._email}</td>
-            <td>${result._admin ? "Sim" : "Não"}</td>
-            <td>${Utils.dateFormat(result._register)}</td>
-            <td>
-                <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-                <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-            </td>
-        `;
+
+                    // Atualiza o conteúdo HTML da linha com os novos dados do usuário.
+                    tr.innerHTML = ` 
+                        <td><img src="${result._photo}" alt="User Image" class="img-circle img-sm"></td>
+                        <td>${result._name}</td>
+                        <td>${result._email}</td>
+                        <td>${result._admin ? "Sim" : "Não"}</td>
+                        <td>${Utils.dateFormat(result._register)}</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
+                            <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+                        </td>
+                    `;
 
                     // Adiciona os eventos de edição e exclusão à linha atualizada.
                     this.addEventsTr(tr);
                     this.formElPut.reset();  // Limpa o formulário de edição.
-                    btn.disabled = false;  // Rehabilita o botão de submit.
+                    btn.disabled = false;  // Reabilita o botão de submit.
                     this.showPanelCreate();  // Exibe o painel de criação novamente.
                 },
                 (e) => {
-                    console.error(e);  // Exibe um erro no console caso a foto não possa ser carregada.
+                    console.error(e);  // Exibe erro no console caso haja problema ao carregar a foto.
                 });
         });
     }
@@ -82,9 +92,9 @@ class UserController {
     // Define o comportamento de envio do formulário de criação de usuário.
     submit() {
 
-        // Adiciona um evento de submit ao formulário de criação.
+        // Evento de submit no formulário de criação de usuário.
         this.formEl.addEventListener("submit", (event) => {
-            event.preventDefault();  // Previne o comportamento padrão (recarregar a página).
+            event.preventDefault();  // Previne o comportamento padrão do formulário (não recarrega a página).
             let value = this.getValue(this.formEl);  // Obtém os valores do formulário.
 
             let btn = this.formEl.querySelector("[type=submit]");  // Seleciona o botão de submit.
@@ -100,14 +110,14 @@ class UserController {
             // Faz a chamada para obter a foto do usuário.
             this.getPhoto(this.formEl).then(
                 (content) => {
-                    value.photo = content;  // Adiciona a foto no objeto de dados.
-                    value.save(); // Insere os dados do novo usuário no armazenamento local.
+                    value.photo = content;  // Adiciona a foto ao objeto de dados.
+                    value.save();  // Insere os dados do novo usuário no armazenamento local.
                     this.addLine(value);  // Adiciona uma nova linha à tabela.
                     this.formEl.reset();  // Limpa o formulário de criação.
                     btn.disabled = false;  // Reabilita o botão de submit.
                 },
                 (e) => {
-                    console.error(e);  // Exibe um erro no console caso a foto não possa ser carregada.
+                    console.error(e);  // Exibe erro no console caso haja problema ao carregar a foto.
                 });
         });
     }
@@ -152,6 +162,7 @@ class UserController {
         // Percorre os elementos do formulário e valida os campos obrigatórios.
         [...formEl.elements].forEach(function (field, index) {
 
+            // Verifica se o campo é obrigatório e não foi preenchido.
             if (['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value) {
                 field.parentElement.classList.add('has-error');  // Marca o campo como inválido.
                 isValid = false;  // Define o status como inválido.
@@ -189,19 +200,9 @@ class UserController {
     }
 
     // Obtém os usuários armazenados no localStorage.
-    getUserStorage(){
-        let users = [];
-
-        if(localStorage.getItem("users")){  // Verifica se há dados de usuários no localStorage.
-            users = JSON.parse(localStorage.getItem("users"));  // Converte os dados em um array de objetos.
-        }
-
-        return users;  // Retorna o array de usuários.
-    }
-
     // Carrega todos os usuários armazenados e os exibe na tabela.
     selectAll(){
-        let users = this.getUserStorage();  // Obtém os usuários armazenados.
+        let users = User.getUserStorage();  // Obtém os usuários armazenados.
 
         users.forEach(data => {
             let user = new User();  // Cria uma nova instância de User.
@@ -243,6 +244,10 @@ class UserController {
         // Adiciona o evento de excluir à linha.
         tr.querySelector(".btn-delete").addEventListener('click', e => {
             if (confirm("Deseja realmente excluir?")) {  // Confirma a exclusão.
+                let user = new User();
+
+                user.loadFromJSON(JSON.parse(tr.dataset.user))  // Carrega os dados do usuário.
+                user.remove()  // Remove o usuário do armazenamento.
                 tr.remove();  // Remove a linha da tabela.
                 this.uptadeCount();  // Atualiza as contagens.
             }
@@ -266,8 +271,8 @@ class UserController {
                             break;
 
                         case 'radio':
-                            field = form.querySelector("[name=" + name.replace("_", "") + "][value=" + json[name] + "]");
-                            field.checked = true;  // Marca o campo de rádio correto.
+                            field = form.querySelector("[name=" + name.replace("_", "") + "][value=" + json[name] + "]");  // Marca o campo de rádio correto.
+                            field.checked = true;
                             break;
 
                         case 'checkbox':
