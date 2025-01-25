@@ -10,7 +10,8 @@ class UserController {
 
         // chamando o metodo ao instanciar o UserController
         this.submit();
-        this.onEditCancel()
+        this.onEditCancel();
+        this.selectAll();
 
     }
 
@@ -102,6 +103,7 @@ class UserController {
             this.getPhoto(this.formEl).then(
                 (content) => {
                     value.photo = content;
+                    this.insert(value);
                     this.addLine(value);
                     this.formEl.reset()
                     btn.disabled = false;
@@ -210,11 +212,42 @@ class UserController {
 
     }
 
+    getUserStorage(){
+        let users = [];
+
+        if(sessionStorage.getItem("users")){
+            users = JSON.parse(sessionStorage.getItem("users"))
+        }
+
+        return users;
+    }
+
+    selectAll(){
+        let users = this.getUserStorage();
+
+        users.forEach(data=>{
+            let user = new User();
+            user.loadFromJSON(data)
+            this.addLine(user)
+        })
+        
+       
+    }
+
+    insert(data){
+
+        let users = this.getUserStorage();
+        users.push(data);
+        sessionStorage.setItem("users", JSON.stringify(users));
+    }
+
     // Neste metodo eu recebo o parametro dataUser que seria as informações preenchidas no formulário 
     // e crio o elemento com o template string
     addLine(dataUser, tableId) {
 
         let tr = document.createElement('tr');
+
+        
 
         tr.dataset.user = JSON.stringify(dataUser);
 

@@ -1,7 +1,7 @@
 class User {
 
     // Aqui estou definindo o que cada usuário vai ter
-    constructor(name, gender, birth, country, email, password, photo, admin){
+    constructor(name, gender, birth, country, email, password, photo, admin) {
         this._name = name;
         this._gerder = gender;
         this._birth = birth;
@@ -15,46 +15,57 @@ class User {
 
     // incluindo o get para buscar a informação
 
-    get name(){
+    get name() {
         return this._name;
     }
 
-    get gender(){
+    get gender() {
         return this._gerder;
     }
 
-    get birth(){
+    get birth() {
         return this._birth;
     }
 
-    get country(){
+    get country() {
         return this._country;
     }
 
-    get email(){
+    get email() {
         return this._email;
     }
 
-    get password(){
+    get password() {
         return this._password
     }
 
-    get photo(){
+    get photo() {
         return this._photo;
     }
 
-    set photo(value){
+    set photo(value) {
         return this._photo = value;
     }
 
-    get admin(){
+    get admin() {
         return this._admin;
     }
 
-    get register(){
+    get register() {
         return this._register;
     }
 
-    
+    loadFromJSON(json) {
+        for (let name in json) {
+            switch (name) {
+                case '_register':
+                    this[name] = new Date(json[name]);
+                    break;
+                default:
+                    this[name] = json[name]
+            }
+
+        }
+    }
 
 }
