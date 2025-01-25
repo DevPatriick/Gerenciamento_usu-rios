@@ -28,23 +28,48 @@ class UserController {
             let index = this.formElPut.dataset.trIndex;
 
             let tr = this.tableEl.rows[index]
-            tr.dataset.user = JSON.stringify(value);
-            tr.innerHTML = `
+
+            let userOld = JSON.parse(tr.dataset.user);
+
+            let result = Object.assign({}, userOld, value);
+
+
+
+
+
+
+            this.uptadeCount();
+           
+
+            this.getPhoto(this.formElPut).then(
+                (content) => {
+                    if (!value.photo) {
+                        result._photo = userOld._photo
+                    } else {
+                        result._photo = content
+                    }
+
+                    tr.dataset.user = JSON.stringify(result);
+                    tr.innerHTML = `
         
-            <td><img src="${value.photo}" alt="User Image" class="img-circle img-sm"></td>
-            <td>${value.name}</td>
-            <td>${value.email}</td>
-            <td>${value.admin ? "Sim" : "Não"}</td>
-            <td>${Utils.dateFormat(value.register)}</td>
+            <td><img src="${result._photo}" alt="User Image" class="img-circle img-sm"></td>
+            <td>${result._name}</td>
+            <td>${result._email}</td>
+            <td>${result._admin ? "Sim" : "Não"}</td>
+            <td>${Utils.dateFormat(result._register)}</td>
             <td>
                 <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
                 <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
             </td>
         `;
-
-        this.addEventsTr(tr);
-        this.uptadeCount();
-        btn.disabled = false;
+                    this.addEventsTr(tr);
+                    this.formElPut.reset()
+                    btn.disabled = false;
+                    this.showPanelCreate();
+                },
+                (e) => {
+                    console.error(e)
+                });
         })
     }
 
@@ -74,7 +99,7 @@ class UserController {
                 return false;
             }
 
-            this.getPhoto().then(
+            this.getPhoto(this.formEl).then(
                 (content) => {
                     value.photo = content;
                     this.addLine(value);
@@ -101,12 +126,12 @@ class UserController {
     // resolve e reject, quando o fileReard.onload der certo ele vai me mandar o resolve, e caso ele de errado
     // eu passo o onerror com o reject e o erro que ele der pelo atributo (e)
 
-    getPhoto() {
+    getPhoto(formEl) {
 
         return new Promise((resolve, reject) => {
             let fileReard = new FileReader();
 
-            let elements = [...this.formEl.elements].filter(item => {
+            let elements = [...formEl.elements].filter(item => {
                 if (item.name === "photo") {
                     return item;
                 }
@@ -214,7 +239,7 @@ class UserController {
 
     }
 
-    addEventsTr(tr){
+    addEventsTr(tr) {
         tr.querySelector(".btn-edit").addEventListener('click', e => {
             let json = JSON.parse(tr.dataset.user);
             let form = document.querySelector("#form-user-uptade");
@@ -247,6 +272,8 @@ class UserController {
                 }
 
             }
+
+            this.formElPut.querySelector(".photo").src = json._photo;
 
             this.showPanelUptade()
 
