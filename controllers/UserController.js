@@ -2,9 +2,10 @@ class UserController {
 
     // Colocando meus atributos e colocando os parametros que tenho que receber que no caso é o id
     // do formulário
-    constructor(formId, tableId) {
+    constructor(formId, formIdUptade, tableId) {
 
         this.formEl = document.getElementById(formId);
+        this.formElPut = document.getElementById(formIdUptade);
         this.tableEl = document.getElementById(tableId);
 
         // chamando o metodo ao instanciar o UserController
@@ -17,6 +18,34 @@ class UserController {
         document.querySelector(".btn-defaut").addEventListener('click', (e) => {
             this.showPanelCreate();
         })
+
+        this.formElPut.addEventListener("submit", event => {
+            event.preventDefault();
+            let btn = this.formElPut.querySelector("[type=submit]");
+            btn.disabled = true;
+            let value = this.getValue(this.formElPut);
+            console.log(value);
+            let index = this.formElPut.dataset.trIndex;
+
+            let tr = this.tableEl.rows[index]
+            tr.dataset.user = JSON.stringify(value);
+            tr.innerHTML = `
+        
+            <td><img src="${value.photo}" alt="User Image" class="img-circle img-sm"></td>
+            <td>${value.name}</td>
+            <td>${value.email}</td>
+            <td>${value.admin ? "Sim" : "Não"}</td>
+            <td>${Utils.dateFormat(value.register)}</td>
+            <td>
+                <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
+                <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+            </td>
+        `;
+
+        this.addEventsTr(tr);
+        this.uptadeCount();
+        btn.disabled = false;
+        })
     }
 
     // Aqui estou pegando o formEl que vai ser o id do formulário que veio como parametro e fazendo o
@@ -27,9 +56,9 @@ class UserController {
 
         this.formEl.addEventListener("submit", (event) => {
             event.preventDefault();
-            let value = this.getValue();
+            let value = this.getValue(this.formEl);
 
-            let btn = this.formEl.querySelector("[type=submit");
+            let btn = this.formEl.querySelector("[type=submit]");
 
             btn.disabled = true;
 
@@ -110,13 +139,13 @@ class UserController {
 
     // Aqui eu estou percorrendo o meu formulário pelo formEl e validando qual gender está marcado
     // Ao percorrer estou retornando neste metodo os valores que estão dentro dos campos do formulário.
-    getValue() {
+    getValue(formEl) {
 
         const user = {};
         let isValid = true;
 
 
-        [...this.formEl.elements].forEach(function (field, index) {
+        [...formEl.elements].forEach(function (field, index) {
 
             if (['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value) {
                 field.parentElement.classList.add('has-error');
@@ -177,9 +206,20 @@ class UserController {
             </td>
         `;
 
+        this.addEventsTr(tr);
+
+        this.tableEl.appendChild(tr);
+
+        this.uptadeCount();
+
+    }
+
+    addEventsTr(tr){
         tr.querySelector(".btn-edit").addEventListener('click', e => {
             let json = JSON.parse(tr.dataset.user);
             let form = document.querySelector("#form-user-uptade");
+
+            form.dataset.trIndex = tr.sectionRowIndex;
 
             for (let name in json) {
                 let field = form.querySelector("[name=" + name.replace("_", "") + "]");
@@ -211,11 +251,6 @@ class UserController {
             this.showPanelUptade()
 
         })
-
-        this.tableEl.appendChild(tr);
-
-        this.uptadeCount();
-
     }
 
     showPanelCreate() {
