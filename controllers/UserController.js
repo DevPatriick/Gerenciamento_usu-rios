@@ -13,8 +13,8 @@ class UserController {
 
     }
 
-    onEditCancel(){
-        document.querySelector(".btn-defaut").addEventListener('click', (e)=>{
+    onEditCancel() {
+        document.querySelector(".btn-defaut").addEventListener('click', (e) => {
             this.showPanelCreate();
         })
     }
@@ -177,18 +177,35 @@ class UserController {
             </td>
         `;
 
-        tr.querySelector(".btn-edit").addEventListener('click', e=>{
+        tr.querySelector(".btn-edit").addEventListener('click', e => {
             let json = JSON.parse(tr.dataset.user);
             let form = document.querySelector("#form-user-uptade");
 
-            for (let name in json){
-               let field = form.querySelector("[name=" + name.replace("_", "") + "]");
+            for (let name in json) {
+                let field = form.querySelector("[name=" + name.replace("_", "") + "]");
 
-               if(field){
-                if(field.type == 'file') continue
-                field.value = json[name];
-               } 
-               
+                if (field) {
+
+                    switch (field.type) {
+                        case 'file':
+                            continue;
+                            break;
+
+                        case 'radio':
+                            field = form.querySelector("[name=" + name.replace("_", "") + "][value=" + json[name] + "]");
+                            field.checked = true;
+                            break;
+
+                        case 'checkbox':
+                            field.checked = json[name];
+                            break;
+
+                        default:
+                            field.value = json[name]
+                    }
+
+                }
+
             }
 
             this.showPanelUptade()
@@ -201,14 +218,14 @@ class UserController {
 
     }
 
-    showPanelCreate(){
+    showPanelCreate() {
         const boxpost = document.querySelector(".box-success")
         boxpost.style = "display:block"
         const boxput = document.querySelector(".box-primary")
         boxput.style = "display:none"
     }
 
-    showPanelUptade(){
+    showPanelUptade() {
         const boxpost = document.querySelector(".box-success")
         boxpost.style = "display:none"
         const boxput = document.querySelector(".box-primary")
@@ -219,7 +236,7 @@ class UserController {
 
         let numberUser = 0;
         let numberAdmin = 0;
-        [...this.tableEl.children].forEach(tr=> {
+        [...this.tableEl.children].forEach(tr => {
             numberUser++;
             let users = JSON.parse(tr.dataset.user);
             if (users._admin) {
